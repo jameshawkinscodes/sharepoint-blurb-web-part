@@ -1,11 +1,12 @@
-# share-point-blurb-web-part
+# SharePoint Blurb Web Part
 
 ## Summary
 
-The Blurb web part is a container which displays a user configurable icon, title and text. The container border colour and background colour can also be set to match your SharePoint site's theme. 
+The Blurb web part offers a clean and stylish way to combine text and images. It’s ideal for highlighting key pieces of information, often arranged in rows to effectively present important details.
+
+![Blurb Example 2](src/webparts/blurb/assets/Blurb-Web-Part-With-Properties-Pane.png)
 
 ![Blurb Example](src/webparts/blurb/assets/Blurb-Web-Part-With-Default-Properties-Pane.png)
-![Blurb Example 2](src/webparts/blurb/assets/Blurb-Web-Part-With-Properties-Pane.png)
 
 ## Used SharePoint Framework Version
 
@@ -14,9 +15,6 @@ The Blurb web part is a container which displays a user configurable icon, title
 ## Applies to
 
 - [SharePoint Framework](https://aka.ms/spfx)
-- [Microsoft 365 tenant](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
-
-> Get your own free development tenant by subscribing to [Microsoft 365 developer program](http://aka.ms/o365devprogram)
 
 ## Prerequisites
 
@@ -24,7 +22,7 @@ The Blurb web part is a container which displays a user configurable icon, title
 
 ## Solution
 
-| Solution    | Author(s)                                                |
+| Solution    | Authour(s)                                                |
 | ----------- |  ------------------------------------------------------- |
 | folder name | James Hawkins (Reactive Web Studio)                      |
 
@@ -50,17 +48,31 @@ The Blurb web part is a container which displays a user configurable icon, title
 
 > Include any additional steps as needed.
 
-## Features
+## Blurb Web Part Features
 
-Description of the extension that expands upon high-level summary above.
+- Customizable Layout:
+The Blurb web part allows users to display information in up to four customizable content containers. Each container can be independently styled and displayed in a single row, making it easy to organize and present multiple pieces of important content side by side.
+Text and Image Combination:
 
-This extension illustrates the following concepts:
+Each container supports a combination of rich text and imagery. Users can add a title, formatted text, and hyperlinks, making it flexible for various types of content. Whether it’s a brief announcement or detailed information, the Blurb web part adapts to different needs.
 
-- topic 1
-- topic 2
-- topic 3
+- Customizable Appearance:
 
-> Notice that better pictures and documentation will increase the sample usage and the value you are providing for others. Thanks for your submissions advance.
+You can tailor the appearance of each container by setting different border colors and background colors, ensuring that the Blurb fits seamlessly with the design of your SharePoint page.
+Icon and Image Options:
+
+Users have the option to choose between an icon or a custom image for each container. Icons are available for quick selection, while custom images can be uploaded to personalize each blurb further.
+
+- Easy Editing Experience:
+
+The web part includes an intuitive Edit Web Part panel where users can manage and style containers without leaving the edit mode of the page. The layout and design controls are centralized, simplifying customization.
+
+- Responsive Design:
+
+The Blurb web part is designed to look great on any device. The content containers adapt to different screen sizes, ensuring a consistent experience for users on desktops, tablets, or mobile devices.
+Streamlined User Experience:
+
+With a layout similar to the default Quick Links web part, the Blurb web part offers a familiar, easy-to-use interface. Users can quickly set up and arrange blurbs to highlight key information effectively.
 
 > Share your web part with others through Microsoft 365 Patterns and Practices program to get visibility and exposure. More details on the community, open-source projects and other activities from http://aka.ms/m365pnp.
 
