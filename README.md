@@ -4,8 +4,8 @@
 
 The Blurb web part is a container which displays a user configurable icon, title and text. The container border colour and background colour can also be set to match your SharePoint site's theme. 
 
-![Blurb Example](/assets/Blurb-Web-Part-With-Default-Properties-Pane.png)
-![Blurb Example 2](/assets/Blurb-Web-Part-With-Properties-Pane.png)
+![Blurb Example](src/webparts/blurb/assets/Blurb-Web-Part-With-Default-Properties-Pane.png)
+![Blurb Example 2](src/webparts/blurb/assets/Blurb-Web-Part-With-Properties-Pane.png)
 
 ## Used SharePoint Framework Version
 
