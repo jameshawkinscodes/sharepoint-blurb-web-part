@@ -1,0 +1,19 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "blurb-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/blurb/BlurbWebPart.js",
+          "manifest": "./src/webparts/blurb/BlurbWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "BlurbWebPartStrings": "lib/webparts/blurb/loc/{locale}.js",
+    "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "share-point-blurb-web-par-client-side-solution",
+    "id": "52d0dec5-3fde-4d82-ae28-f64c4d2776f5",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.20.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "SharePoint-Blurb-Web-Par description"
+      },
+      "longDescription": {
+        "default": "SharePoint-Blurb-Web-Par description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "share-point-blurb-web-par Feature",
+        "description": "The feature that activates elements of the share-point-blurb-web-par solution.",
+        "id": "b73cd6c5-4fd9-46b2-ba70-89e445c0a2fb",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/share-point-blurb-web-par.sppkg"
+  }
+}
