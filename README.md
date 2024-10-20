@@ -1,10 +1,11 @@
-# share-point-blurb-web-par
+# share-point-blurb-web-part
 
 ## Summary
 
 Short summary on functionality and used technologies.
 
-[picture of the solution in action, if possible]
+![Blurb Example](/assets/Blurb-Web-Part-With-Default-Properties-Pane.png)
+![Blurb Example 2](/assets/Blurb-Web-Part-With-Properties-Pane.png)
 
 ## Used SharePoint Framework Version
 
@@ -23,16 +24,15 @@ Short summary on functionality and used technologies.
 
 ## Solution
 
-| Solution    | Author(s)                                               |
-| ----------- | ------------------------------------------------------- |
-| folder name | Author details (name, company, twitter alias with link) |
+| Solution    | Author(s)                                                |
+| ----------- |  ------------------------------------------------------- |
+| folder name | James Hawkins (Reactive Web Studio)                      |
 
 ## Version history
 
 | Version | Date             | Comments        |
 | ------- | ---------------- | --------------- |
-| 1.1     | March 10, 2021   | Update comment  |
-| 1.0     | January 29, 2021 | Initial release |
+| 1.0     | October 20, 2024 | Initial release |
 
 ## Disclaimer
 
