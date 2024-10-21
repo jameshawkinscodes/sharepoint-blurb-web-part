@@ -130,9 +130,10 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
     return Promise.resolve(this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment);
   }
   
-  protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): void {
+  protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: string | number, newValue: string | number): void {
+  
     if (propertyPath === 'containerCount' && newValue !== oldValue) {
-      const newContainerCount = newValue;
+      const newContainerCount = newValue as number; // Ensure newValue is treated as a number
       const currentContainerCount = this.properties.containers.length;
   
       if (newContainerCount > currentContainerCount) {
@@ -153,9 +154,13 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
       }
     }
   
+    // Call the parent method to handle other changes
     super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
+  
+    // Re-render the web part to reflect the changes
     this.render();
   }
+  
 
   private _isEditMode: boolean = false;
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
