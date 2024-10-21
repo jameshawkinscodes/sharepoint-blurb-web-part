@@ -28,6 +28,7 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
             style={{
               backgroundColor: container.backgroundColor,
               border: `2px solid ${container.borderColor}`,
+              borderRadius: container.borderRadius, 
               margin: '10px',
               padding: '20px',
               width: '200px',

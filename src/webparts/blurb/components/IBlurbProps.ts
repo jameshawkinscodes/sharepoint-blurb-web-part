@@ -5,6 +5,7 @@ export interface IBlurbProps {
       icon: string;
       backgroundColor: string;
       borderColor: string;
+      borderRadius: string;
       title: string;
       text: string;
     }>;

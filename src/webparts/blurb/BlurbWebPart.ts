@@ -22,6 +22,7 @@ export interface IBlurbWebPartProps {
     icon: string;
     backgroundColor: string;
     borderColor: string;
+    borderRadius: string;
     title: string; 
   }>;
 }
@@ -71,17 +72,26 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
       this.properties.containerCount = 1; // Default to 1 if not set
     }
   
-    if (!this.properties.containers || this.properties.containers.length === 0) {
+    if (!this.properties.containers) {
       this.properties.containers = [];
-      for (let i = 0; i < this.properties.containerCount; i++) {
+    }
+  
+    const currentContainerCount = this.properties.containers.length;
+    if (this.properties.containerCount > currentContainerCount) {
+      // Add new containers
+      for (let i = currentContainerCount; i < this.properties.containerCount; i++) {
         this.properties.containers.push({
           icon: '',
           backgroundColor: '#ffffff',
           borderColor: '#000000',
+          borderRadius: '0px',
           title: `Blurb ${i + 1}`,
           text: 'Add text'
         });
       }
+    } else if (this.properties.containerCount < currentContainerCount) {
+      // Remove excess containers
+      this.properties.containers.splice(this.properties.containerCount);
     }
   
     console.log('Containers after initialization:', this.properties.containers); // Debug log
@@ -90,7 +100,7 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
     this._environmentMessage = message;
   
     return await super.onInit();
-  }  
+  }
 
   protected onPropertyPaneConfigurationComplete(): void {
     this._isEditMode = false;
@@ -122,15 +132,24 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
   
   protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): void {
     if (propertyPath === 'containerCount' && newValue !== oldValue) {
-      this.properties.containers = [];
-      for (let i = 0; i < newValue; i++) {
-        this.properties.containers.push({
-          icon: 'Contact',
-          backgroundColor: '#ffffff',
-          borderColor: '#000000',
-          title: `Blurb ${i + 1}`,
-          text: 'Add text'
-        });
+      const newContainerCount = newValue;
+      const currentContainerCount = this.properties.containers.length;
+  
+      if (newContainerCount > currentContainerCount) {
+        // Add new containers
+        for (let i = currentContainerCount; i < newContainerCount; i++) {
+          this.properties.containers.push({
+            icon: '',
+            backgroundColor: '#ffffff',
+            borderColor: '#000000',
+            borderRadius: '0px',
+            title: `Blurb ${i + 1}`,
+            text: 'Add text'
+          });
+        }
+      } else if (newContainerCount < currentContainerCount) {
+        // Remove excess containers
+        this.properties.containers.splice(newContainerCount);
       }
     }
   
@@ -177,6 +196,7 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
           icon: '',
           backgroundColor: '#ffffff',
           borderColor: '#000000',
+          borderRadius: '0px', 
           title: `Container ${i + 1}`,
           text: ''
         });
@@ -220,6 +240,10 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
                   label: `Blurb Heading ${this.selectedContainerIndex + 1}`,
                   value: selectedContainer.title || ''
                 }),
+                PropertyPaneTextField(`containers[${this.selectedContainerIndex}].text`, {
+                  label: `Blurb Text ${this.selectedContainerIndex + 1}`,
+                  value: selectedContainer.text || ''
+                }),
                 PropertyFieldColorPicker(`containers[${this.selectedContainerIndex}].backgroundColor`, {
                   label: "Background Color",
                   selectedColor: selectedContainer.backgroundColor,
@@ -238,10 +262,14 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
                   showPreview: true,
                   key: `borderColor-${this.selectedContainerIndex}`
                 }),
-                PropertyPaneTextField(`containers[${this.selectedContainerIndex}].text`, {
-                  label: `Blurb Text ${this.selectedContainerIndex + 1}`,
-                  value: selectedContainer.text || ''
-                })
+                PropertyPaneSlider(`containers[${this.selectedContainerIndex}].borderRadius`, {
+                  label: "Border Radius",
+                  min: 0,
+                  max: 50,
+                  step: 1,
+                  value: parseInt(selectedContainer.borderRadius || '0', 10),
+                  showValue: true,
+                }),
               ]
             }
           ]

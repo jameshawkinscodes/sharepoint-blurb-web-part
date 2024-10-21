@@ -12,8 +12,8 @@
     "libraryId": "52d0dec5-3fde-4d82-ae28-f64c4d2776f5",
     "environment": "spo",
     "packageManager": "npm",
-    "solutionName": "SharePoint-Blurb-Web-Par",
-    "solutionShortDescription": "SharePoint-Blurb-Web-Part description",
+    "solutionName": "Blurb-Web-Part",
+    "solutionShortDescription": "Blurb-Web-Part description",
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
     "componentType": "webpart"
