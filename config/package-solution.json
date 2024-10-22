@@ -23,15 +23,15 @@
         "default": "The Blurb Web Part is ideal for displaying key information with a combination of text and images. It's a versatile solution for highlighting content in a clean, visually appealing layout."
       },
       "screenshotPaths": [
-        "src/webparts/blurb/assets/Blurb-Web-Part-With-Properties-Pane.png",
-        "src/webparts/blurb/assets/Blurb-Web-Part-With-Default-Properties-Pane.png"
+        "/images/Blurb-Web-Part-With-Properties-Pane.png",
+        "/images/Blurb-Web-Part-With-Default-Properties-Pane.png"
       ],
       "videoUrl": "https://www.youtube.com/watch?v=example-video",
       "categories": ["Content management", "Site Design"]
     },
     "features": [
       {
-        "title": "share-point-blurb-web-part Feature",
+        "title": "sharepoint-blurb-web-part Feature",
         "description": "The feature that activates elements of the SharePoint Blurb Web Part solution.",
         "id": "b73cd6c5-4fd9-46b2-ba70-89e445c0a2fb",
         "version": "1.0.0.0"
