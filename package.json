@@ -19,9 +19,12 @@
     "@microsoft/sp-office-ui-fabric-core": "1.20.0",
     "@microsoft/sp-property-pane": "1.20.0",
     "@microsoft/sp-webpart-base": "1.20.0",
+    "@pnp/spfx-controls-react": "^3.19.0",
     "@pnp/spfx-property-controls": "3.18.0",
+    "office-ui-fabric-react": "^7.204.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-sortable-hoc": "^2.0.0",
     "tslib": "2.3.1"
   },
   "devDependencies": {

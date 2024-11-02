@@ -16,25 +16,24 @@ import { initializeIcons } from '@fluentui/react/lib/Icons';
 export interface IBlurbWebPartProps {
   description: string;
   containerCount: number;
-  key:string;
   containers: Array<{
-    text: string;
+    fontColor: string;
     icon: string;
     backgroundColor: string;
     borderColor: string;
     borderRadius: string;
-    title: string; 
+    title: string;
+    text: string;
   }>;
 }
 
 export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartProps> {
-
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
-  private selectedContainerIndex: number = -1;  // Store the selected container index
+  private selectedContainerIndex: number = -1;
+  private _isEditMode: boolean = false;
 
   public render(): void {
-    console.log('Containers:', this.properties.containers);
     const element: React.ReactElement<IBlurbProps> = React.createElement(
       Blurb,
       {
@@ -45,61 +44,69 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
         userDisplayName: this.context.pageContext.user.displayName,
         containers: this.properties.containers || [],
         containerCount: this.properties.containerCount || 1,
-        onContainerClick: (index: number) => {
-          console.log('Container clicked:', index); // Verify this log
+  
+        onContainerClick: async (index: number) => {
+          // If the property pane is already open, close it
+          if (this.context.propertyPane.isRenderedByWebPart()) {
+            this.context.propertyPane.close();
+          }
+  
+          // Give it a slight delay to ensure it fully closes
+          await new Promise(resolve => setTimeout(resolve, 100));
+  
+          // Set the selected container index
           this.selectedContainerIndex = index;
+  
+          // Set edit mode and refresh the property pane
           this._isEditMode = true;
           this.context.propertyPane.refresh();
+          
+          // Open the property pane to display the container properties
           this.context.propertyPane.open();
-        }        
+        }
       }
     );
-
+  
     ReactDom.render(element, this.domElement);
   }
-
-  // Ensure that we unmount the component when disposing of the web part
+  
+  
   protected onDispose(): void {
     ReactDom.unmountComponentAtNode(this.domElement);
   }
 
   protected async onInit(): Promise<void> {
     initializeIcons();
-  
-    console.log('Initializing containers'); // Debug log
-  
+    
     if (!this.properties.containerCount) {
-      this.properties.containerCount = 1; // Default to 1 if not set
+      this.properties.containerCount = 1;
     }
-  
+
     if (!this.properties.containers) {
       this.properties.containers = [];
     }
-  
+
     const currentContainerCount = this.properties.containers.length;
     if (this.properties.containerCount > currentContainerCount) {
-      // Add new containers
       for (let i = currentContainerCount; i < this.properties.containerCount; i++) {
         this.properties.containers.push({
           icon: '',
           backgroundColor: '#ffffff',
           borderColor: '#000000',
           borderRadius: '0px',
+          fontColor: '#000000',
           title: `Blurb ${i + 1}`,
           text: 'Add text'
         });
       }
     } else if (this.properties.containerCount < currentContainerCount) {
-      // Remove excess containers
       this.properties.containers.splice(this.properties.containerCount);
     }
-  
-    console.log('Containers after initialization:', this.properties.containers); // Debug log
-  
+
     const message = await this._getEnvironmentMessage();
     this._environmentMessage = message;
-  
-    return await super.onInit();
+
+    return super.onInit();
   }
 
   protected onPropertyPaneConfigurationComplete(): void {
@@ -126,63 +133,100 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
       }
       return environmentMessage;
     }
-  
-    return Promise.resolve(this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment);
+    return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment;
   }
-  
+
   protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: string | number, newValue: string | number): void {
-  
     if (propertyPath === 'containerCount' && newValue !== oldValue) {
-      const newContainerCount = newValue as number; // Ensure newValue is treated as a number
+      const newContainerCount = newValue as number;
       const currentContainerCount = this.properties.containers.length;
-  
+
       if (newContainerCount > currentContainerCount) {
-        // Add new containers
         for (let i = currentContainerCount; i < newContainerCount; i++) {
           this.properties.containers.push({
             icon: '',
             backgroundColor: '#ffffff',
             borderColor: '#000000',
             borderRadius: '0px',
+            fontColor: '#000000',
             title: `Blurb ${i + 1}`,
             text: 'Add text'
           });
         }
       } else if (newContainerCount < currentContainerCount) {
-        // Remove excess containers
         this.properties.containers.splice(newContainerCount);
       }
     }
-  
-    // Call the parent method to handle other changes
+
     super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
-  
-    // Re-render the web part to reflect the changes
     this.render();
   }
-  
 
-  private _isEditMode: boolean = false;
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
-    if (!this._isEditMode || this.selectedContainerIndex === -1) {
+    if (this._isEditMode && this.selectedContainerIndex !== -1) {
+      const selectedContainer = this.properties.containers[this.selectedContainerIndex] || {};
       return {
         pages: [
           {
-            header: { description: "Select a Blurb to configure its properties" },
+            header: { description: `Configure Blurb ${this.selectedContainerIndex + 1}` },
             groups: [
               {
-                groupName: "Settings",
+                groupName: "Blurb Settings",
                 groupFields: [
-                  PropertyPaneTextField('description', {
-                    label: "Description",
-                    value: this.properties.description,
+                  PropertyFieldIconPicker(`containers[${this.selectedContainerIndex}].icon`, {
+                    label: "Select Icon",
+                    currentIcon: selectedContainer.icon,
+                    onSave: (iconName: string) => {
+                      this.properties.containers[this.selectedContainerIndex].icon = iconName;
+                      this.render();
+                    },
+                    properties: this.properties,
+                    onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
+                    buttonLabel: "Select Icon",
+                    renderOption: "panel",
+                    key: `iconPicker-${this.selectedContainerIndex}`
                   }),
-                  PropertyPaneSlider('containerCount', {
-                    label: "Number of Blurbs",
-                    min: 1,
-                    max: 4,
+                  PropertyPaneTextField(`containers[${this.selectedContainerIndex}].title`, {
+                    label: `Blurb Title ${this.selectedContainerIndex + 1}`,
+                    value: selectedContainer.title || ''
+                  }),
+                  PropertyPaneTextField(`containers[${this.selectedContainerIndex}].text`, {
+                    label: `Blurb Text ${this.selectedContainerIndex + 1}`,
+                    value: selectedContainer.text || ''
+                  }),
+                  PropertyFieldColorPicker(`containers[${this.selectedContainerIndex}].fontColor`, {
+                    label: "Font Color",
+                    selectedColor: selectedContainer.fontColor,
+                    onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
+                    properties: this.properties,
+                    style: PropertyFieldColorPickerStyle.Inline,
+                    showPreview: true,
+                    key: `fontColor-${this.selectedContainerIndex}`
+                  }),
+                  PropertyFieldColorPicker(`containers[${this.selectedContainerIndex}].backgroundColor`, {
+                    label: "Background Color",
+                    selectedColor: selectedContainer.backgroundColor,
+                    onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
+                    properties: this.properties,
+                    style: PropertyFieldColorPickerStyle.Inline,
+                    showPreview: true,
+                    key: `backgroundColor-${this.selectedContainerIndex}`
+                  }),
+                  PropertyFieldColorPicker(`containers[${this.selectedContainerIndex}].borderColor`, {
+                    label: "Border Color",
+                    selectedColor: selectedContainer.borderColor,
+                    onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
+                    properties: this.properties,
+                    style: PropertyFieldColorPickerStyle.Inline,
+                    showPreview: true,
+                    key: `borderColor-${this.selectedContainerIndex}`
+                  }),
+                  PropertyPaneSlider(`containers[${this.selectedContainerIndex}].borderRadius`, {
+                    label: "Border Radius",
+                    min: 0,
+                    max: 50,
                     step: 1,
-                    value: this.properties.containerCount,
+                    value: selectedContainer.borderRadius ? parseInt(selectedContainer.borderRadius, 10) : 0,
                     showValue: true,
                   }),
                 ]
@@ -192,87 +236,24 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
         ]
       };
     }
-  
-    // Ensure containers array is initialized
-    if (!this.properties.containers || this.properties.containers.length < this.properties.containerCount) {
-      this.properties.containers = [];
-      for (let i = 0; i < this.properties.containerCount; i++) {
-        this.properties.containers.push({
-          icon: '',
-          backgroundColor: '#ffffff',
-          borderColor: '#000000',
-          borderRadius: '0px', 
-          title: `Container ${i + 1}`,
-          text: ''
-        });
-      }
-    }
-  
-    // Get the selected container based on the selected index
-    const selectedContainer = this.properties.containers[this.selectedContainerIndex] || {};
+
     return {
       pages: [
         {
-          header: {
-            description: `Configure Blurb ${this.selectedContainerIndex + 1}`
-          },
+          header: { description: "Select a Blurb to configure its properties" },
           groups: [
             {
-              groupName: "Blurb Settings",
+              groupName: "Settings",
               groupFields: [
-                PropertyFieldIconPicker(`containers[${this.selectedContainerIndex}].icon`, {
-                  label: "Icon",
-                  currentIcon: this.properties.containers[this.selectedContainerIndex].icon || '',
-                  onSave: (iconName: string) => {
-                    this.onPropertyPaneFieldChanged(
-                      `containers[${this.selectedContainerIndex}].icon`,
-                      this.properties.containers[this.selectedContainerIndex].icon,
-                      iconName
-                    );
-                    this.properties.containers[this.selectedContainerIndex].icon = iconName;
-                    this.render(); // Re-render after selecting the icon
-                  },
-                  buttonLabel: "Icon",
-                  renderOption: "panel", // Use "panel" or "dialog"
-                  key: `iconPicker-${this.selectedContainerIndex}`,
-                  properties: this.properties,
-                  onPropertyChange: function (propertyPath: string, oldValue: string, newValue: string): void {
-                    throw new Error('Function not implemented.');
-                  }
+                PropertyPaneTextField('description', {
+                  label: "Description",
+                  value: this.properties.description,
                 }),
-                
-                PropertyPaneTextField(`containers[${this.selectedContainerIndex}].title`, {
-                  label: `Blurb Heading ${this.selectedContainerIndex + 1}`,
-                  value: selectedContainer.title || ''
-                }),
-                PropertyPaneTextField(`containers[${this.selectedContainerIndex}].text`, {
-                  label: `Blurb Text ${this.selectedContainerIndex + 1}`,
-                  value: selectedContainer.text || ''
-                }),
-                PropertyFieldColorPicker(`containers[${this.selectedContainerIndex}].backgroundColor`, {
-                  label: "Background Color",
-                  selectedColor: selectedContainer.backgroundColor,
-                  onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
-                  properties: this.properties,
-                  style: PropertyFieldColorPickerStyle.Inline,
-                  showPreview: true,
-                  key: `backgroundColor-${this.selectedContainerIndex}`
-                }),
-                PropertyFieldColorPicker(`containers[${this.selectedContainerIndex}].borderColor`, {
-                  label: "Border Color",
-                  selectedColor: selectedContainer.borderColor,
-                  onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
-                  properties: this.properties,
-                  style: PropertyFieldColorPickerStyle.Inline,
-                  showPreview: true,
-                  key: `borderColor-${this.selectedContainerIndex}`
-                }),
-                PropertyPaneSlider(`containers[${this.selectedContainerIndex}].borderRadius`, {
-                  label: "Border Radius",
-                  min: 0,
-                  max: 50,
-                  step: 1,
-                  value: parseInt(selectedContainer.borderRadius || '0', 10),
+                PropertyPaneSlider('containerCount', {
+                  label: "Number of Blurbs",
+                  min: 1,
+                  max: 4,
+                  value: this.properties.containerCount,
                   showValue: true,
                 }),
               ]
@@ -282,4 +263,4 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
       ]
     };
   }
-}  
+}

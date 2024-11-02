@@ -5,20 +5,44 @@
   padding: 1em;
   color: "[theme:bodyText, default: #323130]";
   color: var(--bodyText);
+  
   &.teams {
     font-family: $ms-font-family-fallbacks;
   }
 }
 
-.welcome {
-  text-align: center;
+.blurb-container-wrapper {
+  display: flex;
+  flex-wrap: wrap; /* Allows containers to wrap on smaller screens */
+  justify-content: space-between;
 }
 
-.welcomeImage {
-  width: 100%;
-  max-width: 420px;
+.blurb-container {
+  flex: 1 1 calc(33.33% - 20px); /* Set the width to 33% for 3 containers per row */
+  margin: 10px;
+  box-sizing: border-box;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px; /* Adjust to your borderRadius property */
+  transition: all 0.3s ease-in-out;
+  position: relative; /* Ensure the toolbar is positioned relative to the container */
 }
 
+/* Adjust for smaller screens */
+@media (max-width: 1024px) {
+  .blurb-container {
+    flex: 1 1 calc(50% - 20px); /* 2 containers per row */
+  }
+}
+
+@media (max-width: 768px) {
+  .blurb-container {
+    flex: 1 1 calc(100% - 20px); /* 1 container per row */
+  }
+}
+
+/* Styling for Links */
 .links {
   a {
     text-decoration: none;
@@ -30,5 +54,61 @@
       color: "[theme:linkHovered, default: #014446]";
       color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
     }
+  }
+}
+
+/* Toolbar Styles */
+.blurb-toolbar {
+  display: none; /* Hidden by default */
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #f3f2f1;
+  padding: 4px;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  
+  /* Ensure the toolbar doesn't overflow from smaller containers */
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.blurb-container:hover .blurb-toolbar {
+  display: flex; /* Show toolbar on hover */
+  align-items: center; /* Ensure buttons are vertically aligned */
+}
+
+/* Styling for the individual toolbar buttons */
+.toolbar-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 0 5px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05); /* Slight background highlight on hover */
+  }
+
+  .ms-Icon {
+    font-size: 16px;
+    color: #333;
+  }
+}
+
+/* Responsive adjustments for the toolbar */
+@media (max-width: 768px) {
+  .blurb-toolbar {
+    top: 2px;
+    right: 2px;
+    padding: 3px;
+  }
+  .toolbar-button .ms-Icon {
+    font-size: 14px; /* Smaller icons on mobile */
   }
 }

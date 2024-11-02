@@ -2,44 +2,44 @@ import * as React from 'react';
 import { IBlurbProps } from './IBlurbProps';
 import { Icon } from '@fluentui/react/lib/Icon';
 
-export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
-  // Initialize containers with props.containers or an empty array
-  const [containers, setContainers] = React.useState(props.containers || []);
+export const Blurb: React.FunctionComponent<IBlurbProps> = ({ containers = [], onContainerClick }) => {
+  const [containerList, setContainerList] = React.useState(containers);
 
-  // Handle when a container is clicked
   const handleContainerClick = (index: number): void => {
-    props.onContainerClick(index);  // Notify the web part that a container was clicked
+    onContainerClick(index);
   };
 
-  // Update containers whenever props.containers changes
   React.useEffect(() => {
-    if (props.containers) {
-      setContainers(props.containers);
-    }
-  }, [props.containers]);
+    setContainerList(containers);
+  }, [containers]);
 
   return (
     <div style={{ textAlign: 'center' }}>
       <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
-        {containers.map((container, index) => (
-          <div 
-            key={index} 
-            onClick={() => handleContainerClick(index)} 
+        {containerList.map((container, index) => (
+          <div
+            key={index}
+            onClick={() => handleContainerClick(index)}
             style={{
               backgroundColor: container.backgroundColor,
               border: `2px solid ${container.borderColor}`,
-              borderRadius: container.borderRadius, 
+              borderRadius: container.borderRadius,
               margin: '10px',
               padding: '20px',
               width: '200px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              color: container.fontColor || '#000000', // Fallback to a default color if not set
             }}
           >
             {container.icon && (
-              <Icon iconName={container.icon} style={{ fontSize: 40 }} aria-hidden="true" />
+              <Icon
+                iconName={container.icon}
+                style={{ fontSize: 40, color: container.fontColor || '#000000' }}
+                aria-hidden="true"
+              />
             )}
-            <h3>{container.title || 'No Title'}</h3> {/* Changed 'Test' to 'No Title' */}
-            <p>{container.text || ''}</p>
+            <h3 style={{ color: container.fontColor || '#000000' }}>{container.title || 'Default Title'}</h3>
+            <p style={{ color: container.fontColor || '#000000' }}>{container.text || 'Add text'}</p>
           </div>
         ))}
       </div>
