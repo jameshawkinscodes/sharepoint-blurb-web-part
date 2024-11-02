@@ -16,21 +16,12 @@ The Blurb web part offers a clean and stylish way to combine text and images. It
 
 - [SharePoint Framework](https://aka.ms/spfx)
 
-## Prerequisites
-
-> Any special pre-requisites?
-
-## Solution
-
-| Solution    | Authour(s)                                                |
-| ----------- |  ------------------------------------------------------- |
-| solution    |  Reactive Web Studio                                     |
 
 ## Version history
 
 | Version | Date             | Comments        |
 | ------- | ---------------- | --------------- |
-| 1.0     | October 20, 2024 | Initial release |
+| 1.0.0     | October 20, 2024 | Initial release |
 
 ## Disclaimer
 
@@ -57,7 +48,7 @@ Each container supports a combination of rich text and imagery. Users can add a 
 - **Customizable Appearance**:
 You can tailor the appearance of each container by setting different border colors and background colors, ensuring that the Blurb fits seamlessly with the design of your SharePoint page.
 
-- **Icon and Image Options**:
+- **Icon Options**:
 Users have the option to choose between an icon or a custom image for each container. Icons are available for quick selection, while custom images can be uploaded to personalize each blurb further.
 
 - **Easy Editing Experience**:
@@ -68,11 +59,3 @@ The Blurb web part is designed to look great on any device. The content containe
 
 - **Streamlined User Experience**: 
 With a layout similar to the default Quick Links web part, the Blurb web part offers a familiar, easy-to-use interface. Users can quickly set up and arrange blurbs to highlight key information effectively.
-
-## References
-
-- [Getting started with SharePoint Framework](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
-- [Building for Microsoft teams](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/build-for-teams-overview)
-- [Use Microsoft Graph in your solution](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/web-parts/get-started/using-microsoft-graph-apis)
-- [Publish SharePoint Framework applications to the Marketplace](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/publish-to-marketplace-overview)
-- [Microsoft 365 Patterns and Practices](https://aka.ms/m365pnp) - Guidance, tooling, samples and open-source controls for your Microsoft 365 development

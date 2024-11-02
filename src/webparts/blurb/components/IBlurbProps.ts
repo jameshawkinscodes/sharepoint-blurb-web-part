@@ -1,18 +1,18 @@
 export interface IBlurbProps {
-    containerCount: number;
-    description: string;
-    containers: Array<{
-      icon: string;
-      backgroundColor: string;
-      borderColor: string;
-      borderRadius: string;
-      title: string;
-      text: string;
-    }>;
-    onContainerClick: (index: number) => void;
-    isDarkTheme?: boolean;
-    environmentMessage?: string;
-    hasTeamsContext?: boolean;
-    userDisplayName?: string;
-  }
-  
+  description: string;
+  isDarkTheme: boolean;
+  environmentMessage: string;
+  hasTeamsContext: boolean;
+  userDisplayName: string;
+  containers: Array<{
+    fontColor: string;
+    icon: string;
+    backgroundColor: string;
+    borderColor: string;
+    borderRadius: string;
+    title: string;
+    text: string;
+  }>;
+  containerCount: number;
+  onContainerClick: (index: number) => void;
+}
