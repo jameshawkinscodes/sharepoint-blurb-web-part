@@ -21,7 +21,7 @@ The Blurb web part offers a clean and stylish way to combine text and images. It
 
 | Version | Date             | Comments        |
 | ------- | ---------------- | --------------- |
-| 1.0.0     | October 20, 2024 | Initial release |
+| 0.0.1     | October 20, 2024 | Development release |
 
 ## Disclaimer
 
