@@ -1,11 +1,7 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
-import {
-  IPropertyPaneConfiguration,
-  PropertyPaneTextField,
-  PropertyPaneSlider,
-} from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+import { IPropertyPaneConfiguration, PropertyPaneTextField, PropertyPaneSlider } from '@microsoft/sp-property-pane';
 import * as strings from 'BlurbWebPartStrings';
 import { Blurb } from './components/Blurb';
 import { IBlurbProps } from './components/IBlurbProps';
@@ -44,40 +40,59 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
         userDisplayName: this.context.pageContext.user.displayName,
         containers: this.properties.containers || [],
         containerCount: this.properties.containerCount || 1,
-  
+
         onContainerClick: async (index: number) => {
-          // If the property pane is already open, close it
+          // Close the property pane if it's already open
           if (this.context.propertyPane.isRenderedByWebPart()) {
             this.context.propertyPane.close();
           }
-  
-          // Give it a slight delay to ensure it fully closes
-          await new Promise(resolve => setTimeout(resolve, 100));
-  
-          // Set the selected container index
+          // Delay to ensure the pane has closed
+          await new Promise(resolve => setTimeout(resolve, 10));
+
+          // Set the selected container and enter edit mode
           this.selectedContainerIndex = index;
-  
-          // Set edit mode and refresh the property pane
           this._isEditMode = true;
           this.context.propertyPane.refresh();
-          
-          // Open the property pane to display the container properties
           this.context.propertyPane.open();
-        }
+        },
+        onEditClick: async (index: number) => {
+          // Handle edit click by closing and reopening the property pane
+          this.selectedContainerIndex = index;
+          this._isEditMode = true;
+
+          if (this.context.propertyPane.isRenderedByWebPart()) {
+            this.context.propertyPane.close();
+          }
+
+          await new Promise(resolve => setTimeout(resolve, 10)); // Delay for smooth reopening
+          this.context.propertyPane.refresh();
+          this.context.propertyPane.open();
+        },
+        onMoveClick: (index: number, direction: 'up' | 'down') => {
+          if (direction === 'up' && index > 0) {
+            const temp = this.properties.containers[index];
+            this.properties.containers[index] = this.properties.containers[index - 1];
+            this.properties.containers[index - 1] = temp;
+          } else if (direction === 'down' && index < this.properties.containers.length - 1) {
+            const temp = this.properties.containers[index];
+            this.properties.containers[index] = this.properties.containers[index + 1];
+            this.properties.containers[index + 1] = temp;
+          }
+          this.render(); // Re-render to reflect the new order
+        },
+        onRemoveClick: (index: number, updatedCount: number) => {
+          this.properties.containers.splice(index, 1);
+          this.properties.containerCount = updatedCount; // Update the container count
+          this.render(); // Re-render the component to reflect the changes
+        },
       }
     );
-  
+
     ReactDom.render(element, this.domElement);
-  }
-  
-  
-  protected onDispose(): void {
-    ReactDom.unmountComponentAtNode(this.domElement);
   }
 
   protected async onInit(): Promise<void> {
     initializeIcons();
-    
     if (!this.properties.containerCount) {
       this.properties.containerCount = 1;
     }
@@ -90,13 +105,13 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
     if (this.properties.containerCount > currentContainerCount) {
       for (let i = currentContainerCount; i < this.properties.containerCount; i++) {
         this.properties.containers.push({
-          icon: '',
-          backgroundColor: '#ffffff',
-          borderColor: '#000000',
-          borderRadius: '0px',
-          fontColor: '#000000',
-          title: `Blurb ${i + 1}`,
-          text: 'Add text'
+          icon: 'CannedChat',
+          backgroundColor: '#FAF9F8',
+          borderColor: '#EDEBE9',
+          borderRadius: '0',
+          fontColor: '#323130',
+          title: ``,
+          text: ''
         });
       }
     } else if (this.properties.containerCount < currentContainerCount) {
@@ -107,6 +122,10 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
     this._environmentMessage = message;
 
     return super.onInit();
+  }
+
+  protected onDispose(): void {
+    ReactDom.unmountComponentAtNode(this.domElement);
   }
 
   protected onPropertyPaneConfigurationComplete(): void {
@@ -144,13 +163,13 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
       if (newContainerCount > currentContainerCount) {
         for (let i = currentContainerCount; i < newContainerCount; i++) {
           this.properties.containers.push({
-            icon: '',
-            backgroundColor: '#ffffff',
-            borderColor: '#000000',
-            borderRadius: '0px',
-            fontColor: '#000000',
-            title: `Blurb ${i + 1}`,
-            text: 'Add text'
+            icon: 'CannedChat',
+            backgroundColor: '#FAF9F8',
+            borderColor: '#EDEBE9',
+            borderRadius: '0',
+            fontColor: '#323130',
+            title: ``,
+            text: ''
           });
         }
       } else if (newContainerCount < currentContainerCount) {
@@ -192,7 +211,9 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
                   }),
                   PropertyPaneTextField(`containers[${this.selectedContainerIndex}].text`, {
                     label: `Blurb Text ${this.selectedContainerIndex + 1}`,
-                    value: selectedContainer.text || ''
+                    value: selectedContainer.text || '',
+                    multiline: true, // Multi-line text input
+                    resizable: true // Allows vertical resizing
                   }),
                   PropertyFieldColorPicker(`containers[${this.selectedContainerIndex}].fontColor`, {
                     label: "Font Color",

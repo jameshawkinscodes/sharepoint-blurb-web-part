@@ -12,11 +12,11 @@
     "test": "gulp test"
   },
   "dependencies": {
-    "@fluentui/react": "^8.121.5",
+    "@fluentui/react": "^8.121.8",
     "@microsoft/sp-component-base": "1.20.0",
     "@microsoft/sp-core-library": "1.20.0",
     "@microsoft/sp-lodash-subset": "1.20.0",
-    "@microsoft/sp-office-ui-fabric-core": "1.20.0",
+    "@microsoft/sp-office-ui-fabric-core": "^1.20.0",
     "@microsoft/sp-property-pane": "1.20.0",
     "@microsoft/sp-webpart-base": "1.20.0",
     "@pnp/spfx-controls-react": "^3.19.0",
