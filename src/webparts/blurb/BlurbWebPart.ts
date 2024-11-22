@@ -24,7 +24,6 @@ export interface IBlurbWebPartProps {
     linkTarget?: string;
   }>;
 }
-
 export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartProps> {
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
@@ -42,24 +41,32 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
         userDisplayName: this.context.pageContext.user.displayName,
         containers: this.properties.containers || [],
         containerCount: this.properties.containerCount || 1,
+        isEditMode: this._isEditMode,
 
         onContainerClick: async (index: number) => {
+          // Close the property pane if it's already open
           if (this.context.propertyPane.isRenderedByWebPart()) {
             this.context.propertyPane.close();
           }
+          // Delay to ensure the pane has closed
           await new Promise(resolve => setTimeout(resolve, 10));
+          
+          // Set the selected container and enter edit mode
           this.selectedContainerIndex = index;
           this._isEditMode = true;
           this.context.propertyPane.refresh();
           this.context.propertyPane.open();
         },
         onEditClick: async (index: number) => {
+          // Handle edit click by closing and reopening the property pane
           this.selectedContainerIndex = index;
           this._isEditMode = true;
+
           if (this.context.propertyPane.isRenderedByWebPart()) {
             this.context.propertyPane.close();
           }
-          await new Promise(resolve => setTimeout(resolve, 10));
+
+          await new Promise(resolve => setTimeout(resolve, 10)); // Delay for smooth reopening
           this.context.propertyPane.refresh();
           this.context.propertyPane.open();
         },
@@ -73,12 +80,12 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
             this.properties.containers[index] = this.properties.containers[index + 1];
             this.properties.containers[index + 1] = temp;
           }
-          this.render();
+          this.render(); // Re-render to reflect the new order
         },
         onRemoveClick: (index: number, updatedCount: number) => {
           this.properties.containers.splice(index, 1);
-          this.properties.containerCount = updatedCount;
-          this.render();
+          this.properties.containerCount = updatedCount; // Update the container count
+          this.render(); // Re-render the component to reflect the changes
         },
       }
     );
@@ -105,10 +112,10 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
           borderColor: '#EDEBE9',
           borderRadius: '0',
           fontColor: '#323130',
-          title: '',
+          title: ``,
           text: '',
           linkUrl: '',
-          linkTarget: '_self'
+          linkTarget: '_self',
         });
       }
     } else if (this.properties.containerCount < currentContainerCount) {
@@ -121,6 +128,15 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
     return super.onInit();
   }
 
+  protected onDispose(): void {
+    ReactDom.unmountComponentAtNode(this.domElement);
+  }
+
+  protected onPropertyPaneConfigurationComplete(): void {
+    this._isEditMode = false;
+    this.selectedContainerIndex = -1;
+  }
+  
   private async _getEnvironmentMessage(): Promise<string> {
     if (!!this.context.sdks.microsoftTeams) {
       const context = await this.context.sdks.microsoftTeams.teamsJs.app.getContext();
@@ -143,6 +159,34 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
     return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment;
   }
 
+  protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: string | number, newValue: string | number): void {
+    if (propertyPath === 'containerCount' && newValue !== oldValue) {
+      const newContainerCount = newValue as number;
+      const currentContainerCount = this.properties.containers.length;
+
+      if (newContainerCount > currentContainerCount) {
+        for (let i = currentContainerCount; i < newContainerCount; i++) {
+          this.properties.containers.push({
+            icon: 'CannedChat',
+            backgroundColor: '#FAF9F8',
+            borderColor: '#EDEBE9',
+            borderRadius: '0',
+            fontColor: '#323130',
+            title: ``,
+            text: '',
+            linkUrl: '',
+            linkTarget: '_self',
+          });
+        }
+      } else if (newContainerCount < currentContainerCount) {
+        this.properties.containers.splice(newContainerCount);
+      }
+    }
+
+    super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
+    this.render();
+  }
+  // The blurb properties pane
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     if (this._isEditMode && this.selectedContainerIndex !== -1) {
       const selectedContainer = this.properties.containers[this.selectedContainerIndex] || {};
@@ -232,7 +276,7 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
         ]
       };
     }
-
+    // The main web part properties pane
     return {
       pages: [
         {

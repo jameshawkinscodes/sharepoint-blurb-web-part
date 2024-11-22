@@ -16,6 +16,7 @@ export interface IBlurbProps {
     linkTarget?: "_self" | "_blank" | string;
   }>;
   containerCount: number;
+  isEditMode: boolean;
   onContainerClick: (index: number) => void;
   onEditClick: (index: number) => void;
   onMoveClick: (index: number, direction: 'up' | 'down') => void; // Updated to include direction

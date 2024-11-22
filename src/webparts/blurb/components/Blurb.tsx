@@ -7,33 +7,13 @@ import styles from './Blurb.module.scss';
 export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
   const [selectedBlurbIndex, setSelectedBlurbIndex] = React.useState<number | null>(null);
 
-  const handleContainerClick = (index: number): void => {
+  const handleContainerClick = (index: number, e: React.MouseEvent): void => {
+    if (props.isEditMode) {
+      e.preventDefault(); // Prevent link navigation in edit mode
+    }
     props.onContainerClick(index);
     setSelectedBlurbIndex(index);
   };
-
-  const handleMoveClick = (index: number, direction: 'up' | 'down'): void => {
-    props.onMoveClick(index, direction);
-  };
-
-  const handleRemoveClick = (index: number): void => {
-    const updatedCount = props.containers.length - 1; // Calculate the updated count
-    props.onRemoveClick(index, updatedCount); // Pass both index and updated count
-    setSelectedBlurbIndex(null);
-  };
-
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!document.querySelector(`.${styles.blurbContainer}`)?.contains(event.target as Node)) {
-        setSelectedBlurbIndex(null);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   return (
     <div className={styles.blurbContainer}>
@@ -41,31 +21,31 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
         {props.containers.map((container, index) => {
           const isSelected = selectedBlurbIndex === index;
 
-          // Determine the wrapper element based on whether the blurb has a link
           const WrapperElement = container.linkUrl ? 'a' : 'div';
           const wrapperProps = container.linkUrl
             ? {
                 href: container.linkUrl,
                 target: container.linkTarget || '_self',
                 className: styles.clickableBlurb,
+                onClick: (e: React.MouseEvent) => handleContainerClick(index, e),
               }
-            : {};
+            : {
+                onClick: (e: React.MouseEvent) => handleContainerClick(index, e),
+              };
 
           return (
             <WrapperElement
               key={index}
               {...wrapperProps}
-              onClick={() => handleContainerClick(index)}
               className={`${styles.container} ${isSelected ? styles.selected : ''}`}
               style={{
                 backgroundColor: container.backgroundColor,
                 border: `1px solid ${isSelected ? '#333' : container.borderColor}`,
                 borderRadius: container.borderRadius,
                 boxShadow: isSelected ? '0 0 5px rgba(0, 0, 0, 0.3)' : 'none',
-                textDecoration: 'none', // Ensure links don't have underlines
+                textDecoration: 'none',
               }}
             >
-              {/* Secondary Toolbar */}
               {isSelected && (
                 <div
                   className={`${styles.toolbar} CanvasControlToolbar-item LightTheme`}
@@ -77,7 +57,7 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
                     ariaLabel="Move Up"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleMoveClick(index, 'up');
+                      props.onMoveClick(index, 'up');
                     }}
                     className={`${styles.toolbarIcon} ToolbarButton`}
                   />
@@ -87,7 +67,7 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
                     ariaLabel="Move Down"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleMoveClick(index, 'down');
+                      props.onMoveClick(index, 'down');
                     }}
                     className={`${styles.toolbarIcon} ToolbarButton`}
                   />
@@ -97,14 +77,13 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
                     ariaLabel="Remove"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleRemoveClick(index);
+                      props.onRemoveClick(index, props.containers.length - 1);
                     }}
                     className={`${styles.toolbarIcon} ToolbarButton`}
                   />
                 </div>
               )}
 
-              {/* Main Content */}
               {container.icon && (
                 <Icon
                   iconName={container.icon}
