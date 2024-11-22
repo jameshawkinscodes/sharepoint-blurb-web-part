@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
-import { IPropertyPaneConfiguration, PropertyPaneTextField, PropertyPaneSlider } from '@microsoft/sp-property-pane';
+import { IPropertyPaneConfiguration, PropertyPaneTextField, PropertyPaneSlider, PropertyPaneDropdown } from '@microsoft/sp-property-pane';
 import * as strings from 'BlurbWebPartStrings';
 import { Blurb } from './components/Blurb';
 import { IBlurbProps } from './components/IBlurbProps';
@@ -20,6 +20,8 @@ export interface IBlurbWebPartProps {
     borderRadius: string;
     title: string;
     text: string;
+    linkUrl?: string;
+    linkTarget?: string;
   }>;
 }
 
@@ -42,29 +44,22 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
         containerCount: this.properties.containerCount || 1,
 
         onContainerClick: async (index: number) => {
-          // Close the property pane if it's already open
           if (this.context.propertyPane.isRenderedByWebPart()) {
             this.context.propertyPane.close();
           }
-          // Delay to ensure the pane has closed
           await new Promise(resolve => setTimeout(resolve, 10));
-
-          // Set the selected container and enter edit mode
           this.selectedContainerIndex = index;
           this._isEditMode = true;
           this.context.propertyPane.refresh();
           this.context.propertyPane.open();
         },
         onEditClick: async (index: number) => {
-          // Handle edit click by closing and reopening the property pane
           this.selectedContainerIndex = index;
           this._isEditMode = true;
-
           if (this.context.propertyPane.isRenderedByWebPart()) {
             this.context.propertyPane.close();
           }
-
-          await new Promise(resolve => setTimeout(resolve, 10)); // Delay for smooth reopening
+          await new Promise(resolve => setTimeout(resolve, 10));
           this.context.propertyPane.refresh();
           this.context.propertyPane.open();
         },
@@ -78,12 +73,12 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
             this.properties.containers[index] = this.properties.containers[index + 1];
             this.properties.containers[index + 1] = temp;
           }
-          this.render(); // Re-render to reflect the new order
+          this.render();
         },
         onRemoveClick: (index: number, updatedCount: number) => {
           this.properties.containers.splice(index, 1);
-          this.properties.containerCount = updatedCount; // Update the container count
-          this.render(); // Re-render the component to reflect the changes
+          this.properties.containerCount = updatedCount;
+          this.render();
         },
       }
     );
@@ -110,8 +105,10 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
           borderColor: '#EDEBE9',
           borderRadius: '0',
           fontColor: '#323130',
-          title: ``,
-          text: ''
+          title: '',
+          text: '',
+          linkUrl: '',
+          linkTarget: '_self'
         });
       }
     } else if (this.properties.containerCount < currentContainerCount) {
@@ -122,15 +119,6 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
     this._environmentMessage = message;
 
     return super.onInit();
-  }
-
-  protected onDispose(): void {
-    ReactDom.unmountComponentAtNode(this.domElement);
-  }
-
-  protected onPropertyPaneConfigurationComplete(): void {
-    this._isEditMode = false;
-    this.selectedContainerIndex = -1;
   }
 
   private async _getEnvironmentMessage(): Promise<string> {
@@ -153,32 +141,6 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
       return environmentMessage;
     }
     return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment;
-  }
-
-  protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: string | number, newValue: string | number): void {
-    if (propertyPath === 'containerCount' && newValue !== oldValue) {
-      const newContainerCount = newValue as number;
-      const currentContainerCount = this.properties.containers.length;
-
-      if (newContainerCount > currentContainerCount) {
-        for (let i = currentContainerCount; i < newContainerCount; i++) {
-          this.properties.containers.push({
-            icon: 'CannedChat',
-            backgroundColor: '#FAF9F8',
-            borderColor: '#EDEBE9',
-            borderRadius: '0',
-            fontColor: '#323130',
-            title: ``,
-            text: ''
-          });
-        }
-      } else if (newContainerCount < currentContainerCount) {
-        this.properties.containers.splice(newContainerCount);
-      }
-    }
-
-    super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
-    this.render();
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
@@ -212,9 +174,22 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
                   PropertyPaneTextField(`containers[${this.selectedContainerIndex}].text`, {
                     label: `Blurb Text ${this.selectedContainerIndex + 1}`,
                     value: selectedContainer.text || '',
-                    multiline: true, // Multi-line text input
-                    resizable: true // Allows vertical resizing
+                    multiline: true,
+                    resizable: true
                   }),
+                  PropertyPaneTextField(`containers[${this.selectedContainerIndex}].linkUrl`, {
+                    label: `Blurb Link URL ${this.selectedContainerIndex + 1}`,
+                    value: selectedContainer.linkUrl || '',
+                    placeholder: "Enter a clickable link URL",
+                  }),
+                  PropertyPaneDropdown(`containers[${this.selectedContainerIndex}].linkTarget`, {
+                    label: `Link Target ${this.selectedContainerIndex + 1}`,
+                    options: [
+                      { key: '_self', text: 'Open in same tab' },
+                      { key: '_blank', text: 'Open in new tab' }
+                    ],
+                    selectedKey: selectedContainer.linkTarget || '_self',
+                  }),                  
                   PropertyFieldColorPicker(`containers[${this.selectedContainerIndex}].fontColor`, {
                     label: "Font Color",
                     selectedColor: selectedContainer.fontColor,

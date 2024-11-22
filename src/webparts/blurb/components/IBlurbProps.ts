@@ -1,4 +1,3 @@
-// IBlurbProps.ts
 export interface IBlurbProps {
   description: string;
   isDarkTheme: boolean;
@@ -13,6 +12,8 @@ export interface IBlurbProps {
     borderRadius: string;
     title: string;
     text: string;
+    linkUrl?: string; // New property for the clickable link in each container
+    linkTarget?: "_self" | "_blank" | string;
   }>;
   containerCount: number;
   onContainerClick: (index: number) => void;
