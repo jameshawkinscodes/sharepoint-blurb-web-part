@@ -1,3 +1,5 @@
+import { DisplayMode } from '@microsoft/sp-core-library';
+
 export interface IBlurbProps {
   description: string;
   isDarkTheme: boolean;
@@ -17,6 +19,7 @@ export interface IBlurbProps {
   }>;
   containerCount: number;
   isEditMode: boolean;
+  displayMode: DisplayMode;
   onContainerClick: (index: number) => void;
   onEditClick: (index: number) => void;
   onMoveClick: (index: number, direction: 'up' | 'down') => void; // Updated to include direction

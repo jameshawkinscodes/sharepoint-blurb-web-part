@@ -8,6 +8,7 @@ import { IBlurbProps } from './components/IBlurbProps';
 import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/spfx-property-controls/lib/PropertyFieldColorPicker';
 import { PropertyFieldIconPicker } from '@pnp/spfx-property-controls/lib/PropertyFieldIconPicker';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
+import { DisplayMode } from '@microsoft/sp-core-library';
 
 export interface IBlurbWebPartProps {
   description: string;
@@ -41,57 +42,61 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
         userDisplayName: this.context.pageContext.user.displayName,
         containers: this.properties.containers || [],
         containerCount: this.properties.containerCount || 1,
-        isEditMode: this._isEditMode,
-
+        isEditMode: this.displayMode === DisplayMode.Edit,
+        displayMode: this.displayMode, // Pass display mode
         onContainerClick: async (index: number) => {
-          // Close the property pane if it's already open
-          if (this.context.propertyPane.isRenderedByWebPart()) {
-            this.context.propertyPane.close();
+          if (this.displayMode === DisplayMode.Edit) {
+            if (this.context.propertyPane.isRenderedByWebPart()) {
+              this.context.propertyPane.close();
+            }
+            await new Promise(resolve => setTimeout(resolve, 10));
+            this.selectedContainerIndex = index;
+            this._isEditMode = true;
+            this.context.propertyPane.refresh();
+            this.context.propertyPane.open();
           }
-          // Delay to ensure the pane has closed
-          await new Promise(resolve => setTimeout(resolve, 10));
-          
-          // Set the selected container and enter edit mode
-          this.selectedContainerIndex = index;
-          this._isEditMode = true;
-          this.context.propertyPane.refresh();
-          this.context.propertyPane.open();
         },
         onEditClick: async (index: number) => {
-          // Handle edit click by closing and reopening the property pane
-          this.selectedContainerIndex = index;
-          this._isEditMode = true;
-
-          if (this.context.propertyPane.isRenderedByWebPart()) {
-            this.context.propertyPane.close();
+          if (this.displayMode === DisplayMode.Edit) {
+            this.selectedContainerIndex = index;
+            this._isEditMode = true;
+  
+            if (this.context.propertyPane.isRenderedByWebPart()) {
+              this.context.propertyPane.close();
+            }
+  
+            await new Promise(resolve => setTimeout(resolve, 10));
+            this.context.propertyPane.refresh();
+            this.context.propertyPane.open();
           }
-
-          await new Promise(resolve => setTimeout(resolve, 10)); // Delay for smooth reopening
-          this.context.propertyPane.refresh();
-          this.context.propertyPane.open();
         },
         onMoveClick: (index: number, direction: 'up' | 'down') => {
-          if (direction === 'up' && index > 0) {
-            const temp = this.properties.containers[index];
-            this.properties.containers[index] = this.properties.containers[index - 1];
-            this.properties.containers[index - 1] = temp;
-          } else if (direction === 'down' && index < this.properties.containers.length - 1) {
-            const temp = this.properties.containers[index];
-            this.properties.containers[index] = this.properties.containers[index + 1];
-            this.properties.containers[index + 1] = temp;
+          if (this.displayMode === DisplayMode.Edit) {
+            if (direction === 'up' && index > 0) {
+              const temp = this.properties.containers[index];
+              this.properties.containers[index] = this.properties.containers[index - 1];
+              this.properties.containers[index - 1] = temp;
+            } else if (direction === 'down' && index < this.properties.containers.length - 1) {
+              const temp = this.properties.containers[index];
+              this.properties.containers[index] = this.properties.containers[index + 1];
+              this.properties.containers[index + 1] = temp;
+            }
+            this.render();
           }
-          this.render(); // Re-render to reflect the new order
         },
         onRemoveClick: (index: number, updatedCount: number) => {
-          this.properties.containers.splice(index, 1);
-          this.properties.containerCount = updatedCount; // Update the container count
-          this.render(); // Re-render the component to reflect the changes
+          if (this.displayMode === DisplayMode.Edit) {
+            this.properties.containers.splice(index, 1);
+            this.properties.containerCount = updatedCount;
+            this.render();
+          }
         },
       }
     );
-
+  
     ReactDom.render(element, this.domElement);
   }
+  
 
   protected async onInit(): Promise<void> {
     initializeIcons();

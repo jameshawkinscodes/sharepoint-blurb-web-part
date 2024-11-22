@@ -3,16 +3,31 @@ import { IBlurbProps } from './IBlurbProps';
 import { IconButton } from '@fluentui/react/lib/Button';
 import { Icon } from '@fluentui/react/lib/Icon';
 import styles from './Blurb.module.scss';
+import { DisplayMode } from '@microsoft/sp-core-library';
 
 export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
   const [selectedBlurbIndex, setSelectedBlurbIndex] = React.useState<number | null>(null);
 
-  const handleContainerClick = (index: number, e: React.MouseEvent): void => {
-    if (props.isEditMode) {
-      e.preventDefault(); // Prevent link navigation in edit mode
+  const handleContainerClick = (index: number, event: React.MouseEvent): void => {
+    if (props.displayMode === DisplayMode.Edit) {
+      event.preventDefault(); // Prevent link navigation in edit mode
+      props.onContainerClick(index);
+      setSelectedBlurbIndex(index);
     }
-    props.onContainerClick(index);
-    setSelectedBlurbIndex(index);
+  };
+
+  const handleMoveClick = (index: number, direction: 'up' | 'down'): void => {
+    if (props.displayMode === DisplayMode.Edit) {
+      props.onMoveClick(index, direction);
+    }
+  };
+
+  const handleRemoveClick = (index: number): void => {
+    if (props.displayMode === DisplayMode.Edit) {
+      const updatedCount = props.containers.length - 1;
+      props.onRemoveClick(index, updatedCount);
+      setSelectedBlurbIndex(null);
+    }
   };
 
   return (
@@ -20,17 +35,16 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
       <div className={styles.containerGrid}>
         {props.containers.map((container, index) => {
           const isSelected = selectedBlurbIndex === index;
-
           const WrapperElement = container.linkUrl ? 'a' : 'div';
           const wrapperProps = container.linkUrl
             ? {
                 href: container.linkUrl,
                 target: container.linkTarget || '_self',
                 className: styles.clickableBlurb,
-                onClick: (e: React.MouseEvent) => handleContainerClick(index, e),
+                onClick: (event: React.MouseEvent) => handleContainerClick(index, event),
               }
             : {
-                onClick: (e: React.MouseEvent) => handleContainerClick(index, e),
+                onClick: (event: React.MouseEvent) => handleContainerClick(index, event),
               };
 
           return (
@@ -46,7 +60,8 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
                 textDecoration: 'none',
               }}
             >
-              {isSelected && (
+              {/* Secondary Toolbar (Only in Edit Mode) */}
+              {props.displayMode === DisplayMode.Edit && (
                 <div
                   className={`${styles.toolbar} CanvasControlToolbar-item LightTheme`}
                   style={{ display: isSelected ? 'flex' : 'none' }}
@@ -57,7 +72,7 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
                     ariaLabel="Move Up"
                     onClick={(e) => {
                       e.stopPropagation();
-                      props.onMoveClick(index, 'up');
+                      handleMoveClick(index, 'up');
                     }}
                     className={`${styles.toolbarIcon} ToolbarButton`}
                   />
@@ -67,7 +82,7 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
                     ariaLabel="Move Down"
                     onClick={(e) => {
                       e.stopPropagation();
-                      props.onMoveClick(index, 'down');
+                      handleMoveClick(index, 'down');
                     }}
                     className={`${styles.toolbarIcon} ToolbarButton`}
                   />
@@ -77,13 +92,14 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
                     ariaLabel="Remove"
                     onClick={(e) => {
                       e.stopPropagation();
-                      props.onRemoveClick(index, props.containers.length - 1);
+                      handleRemoveClick(index);
                     }}
                     className={`${styles.toolbarIcon} ToolbarButton`}
                   />
                 </div>
               )}
 
+              {/* Main Content */}
               {container.icon && (
                 <Icon
                   iconName={container.icon}
