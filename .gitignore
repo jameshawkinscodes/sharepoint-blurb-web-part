@@ -8,7 +8,7 @@ node_modules
 
 # Build generated files
 dist
-config
+config/
 lib
 release
 solution
