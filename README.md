@@ -4,9 +4,9 @@
 
 The Blurb web part offers a clean and stylish way to combine text and images. It’s ideal for highlighting key pieces of information, often arranged in rows to effectively present important details.
 
-![Blurb Example 2](src/webparts/blurb/assets/Blurb-Web-Part-With-Properties-Pane.png)
+![Blurb Example 2](src/webparts/blurb/assets/Blurb-Web-Part-Default-Properties-Pane-0.1.0.png)
 
-![Blurb Example](src/webparts/blurb/assets/Blurb-Web-Part-With-Default-Properties-Pane.png)
+![Blurb Example](src/webparts/blurb/assets/Blurb-Web-Part-With-Default-Properties-Pane-0.1.0.png)
 
 ## Used SharePoint Framework Version
 
