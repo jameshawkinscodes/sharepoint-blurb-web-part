@@ -30,14 +30,6 @@ The Blurb web part offers a clean and stylish way to combine text and images. It
 
 ---
 
-## Minimal Path to Awesome
-
-- Clone this repository
-- Ensure that you are at the solution folder
-- in the command-line run:
-  - **npm install**
-  - **gulp serve**
-
 ## Blurb Web Part Features
 
 - **Customizable Layout**:
