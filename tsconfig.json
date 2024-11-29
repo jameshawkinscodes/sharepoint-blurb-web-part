@@ -11,6 +11,7 @@
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "outDir": "lib",
+    "rootDir": "./src",
     "inlineSources": false,
     "noImplicitAny": true,
 
