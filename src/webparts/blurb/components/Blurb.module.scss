@@ -55,3 +55,8 @@
     color: #f3f2f1;
   }
 }
+
+.clickableBlurb {
+  text-decoration: none; /* Remove underline from links */
+  display: block; /* Ensure the entire block is clickable */
+}
