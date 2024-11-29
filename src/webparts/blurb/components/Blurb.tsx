@@ -7,6 +7,7 @@ import { DisplayMode } from '@microsoft/sp-core-library';
 
 export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
   const [selectedBlurbIndex, setSelectedBlurbIndex] = React.useState<number | null>(null);
+  const [hoveredBlurbIndex, setHoveredBlurbIndex] = React.useState<number | null>(null);
 
   const handleContainerClick = (index: number, event: React.MouseEvent): void => {
     if (props.displayMode === DisplayMode.Edit) {
@@ -35,29 +36,41 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
       <div className={styles.containerGrid}>
         {props.containers.map((container, index) => {
           const isSelected = selectedBlurbIndex === index;
+          const isHovered = hoveredBlurbIndex === index;
           const WrapperElement = container.linkUrl ? 'a' : 'div';
           const wrapperProps = container.linkUrl
             ? {
                 href: container.linkUrl,
                 target: container.linkTarget || '_self',
                 className: styles.clickableBlurb,
-                onClick: (event: React.MouseEvent) => handleContainerClick(index, event),
+                onMouseEnter: () => setHoveredBlurbIndex(index),
+                onMouseLeave: () => setHoveredBlurbIndex(null),
               }
             : {
-                onClick: (event: React.MouseEvent) => handleContainerClick(index, event),
+                onMouseEnter: () => setHoveredBlurbIndex(index),
+                onMouseLeave: () => setHoveredBlurbIndex(null),
               };
 
           return (
             <WrapperElement
               key={index}
               {...wrapperProps}
-              className={`${styles.container} ${isSelected ? styles.selected : ''}`}
+              onClick={(event: React.MouseEvent) => handleContainerClick(index, event)}
+              className={`${styles.container} ${isSelected ? styles.selected : ''} ${
+                isHovered ? styles.hovered : ''
+              }`}
               style={{
                 backgroundColor: container.backgroundColor,
                 border: `1px solid ${isSelected ? '#333' : container.borderColor}`,
                 borderRadius: container.borderRadius,
-                boxShadow: isSelected ? '0 0 5px rgba(0, 0, 0, 0.3)' : 'none',
+                boxShadow: isSelected
+                  ? '0 0 5px rgba(0, 0, 0, 0.3)'
+                  : isHovered
+                  ? '0 0 5px rgba(0, 0, 0, 0.1)'
+                  : 'none',
                 textDecoration: 'none',
+                transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+                transform: isHovered ? 'scale(1.02)' : 'scale(1)',
               }}
             >
               {/* Secondary Toolbar (Only in Edit Mode) */}
