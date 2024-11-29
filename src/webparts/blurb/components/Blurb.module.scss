@@ -21,6 +21,7 @@
   cursor: pointer;
   border: 1px solid; // Override with borderColor inline
   transition: border-color 0.3s, box-shadow 0.3s;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 
   &.selected {
     border-color: #333;
@@ -28,10 +29,15 @@
   }
 
   &:hover .toolbar,
-  &.show-toolbar .toolbar {
+  &.showToolbar .toolbar {
     opacity: 1;
     visibility: visible;
   }
+}
+
+.hovered {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); // Light shadow on hover
+  transform: scale(1.02); // Slight enlargement
 }
 
 .toolbar {
