@@ -9,31 +9,38 @@
 
 .containerGrid {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
-}
+  gap: 16px; // Spacing between containers
+  justify-content: center;
 
-.container {
-  position: relative;
-  margin: 10px;
-  padding: 20px;
-  width: 200px;
-  cursor: pointer;
-  border: 1px solid; // Override with borderColor inline
-  transition: border-color 0.3s, box-shadow 0.3s;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  .container {
+    flex: 1 1 calc(25% - 16px); // Default: 4 containers per row
+    max-width: 200px; // Optional: Set a max width
+    min-width: 150px; // Ensures smaller containers on resize
+    position: relative;
+    margin: 10px;
+    padding: 20px;
+    width: auto; // Allow flexible width
+    cursor: pointer;
+    border: 1px solid; // Override with borderColor inline
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s ease;
 
-  &.selected {
-    border-color: #333;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    &.selected {
+      border-color: #333;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    &:hover .toolbar,
+    &.showToolbar .toolbar {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    &:hover {
+      transform: scale(1.02); // Slight zoom on hover
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
   }
-
-  &:hover .toolbar,
-  &.showToolbar .toolbar {
-    opacity: 1;
-    visibility: visible;
-  }
-}
 
 .hovered {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); // Light shadow on hover
@@ -65,4 +72,25 @@
 .clickableBlurb {
   text-decoration: none; /* Remove underline from links */
   display: block; /* Ensure the entire block is clickable */
+}
+
+// Responsiveness
+@media (max-width: 1200px) {
+  .container {
+    flex: 1 1 calc(33.33% - 16px); // Adjusts to 3 containers per row
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex: 1 1 calc(50% - 16px); // Adjusts to 2 containers per row
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    flex: 1 1 100%; // Full-width containers on smaller screens
+  }
+}
+
 }
