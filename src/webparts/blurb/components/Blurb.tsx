@@ -37,8 +37,9 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
         {props.containers.map((container, index) => {
           const isSelected = selectedBlurbIndex === index;
           const isHovered = hoveredBlurbIndex === index;
-          const WrapperElement = container.linkUrl ? 'a' : 'div';
-          const wrapperProps = container.linkUrl
+
+          const WrapperElement = container.linkUrl && props.displayMode === DisplayMode.Read ? 'a' : 'div';
+          const wrapperProps = container.linkUrl && props.displayMode === DisplayMode.Read
             ? {
                 href: container.linkUrl,
                 target: container.linkTarget || '_self',

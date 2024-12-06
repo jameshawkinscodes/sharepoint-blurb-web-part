@@ -46,29 +46,51 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
         displayMode: this.displayMode, // Pass display mode
         onContainerClick: async (index: number) => {
           if (this.displayMode === DisplayMode.Edit) {
+            // Avoid closing and reopening the property pane if the same container is clicked
+            if (this.selectedContainerIndex === index && this.context.propertyPane.isRenderedByWebPart()) {
+              return;
+            }
+        
             if (this.context.propertyPane.isRenderedByWebPart()) {
               this.context.propertyPane.close();
             }
+        
+            // Add a small delay to ensure smooth UI transitions
             await new Promise(resolve => setTimeout(resolve, 10));
+            
+            // Set the selected container index and update edit mode
             this.selectedContainerIndex = index;
             this._isEditMode = true;
+        
+            // Refresh and open the property pane for the selected container
             this.context.propertyPane.refresh();
             this.context.propertyPane.open();
           }
         },
         onEditClick: async (index: number) => {
           if (this.displayMode === DisplayMode.Edit) {
+            // Avoid redundant updates if the same container is already being edited
+            if (this.selectedContainerIndex === index && this.context.propertyPane.isRenderedByWebPart()) {
+              return;
+            }
+        
+            // Update the selected container index and edit mode
             this.selectedContainerIndex = index;
             this._isEditMode = true;
-  
+        
+            // Close the property pane if it is already rendered
             if (this.context.propertyPane.isRenderedByWebPart()) {
               this.context.propertyPane.close();
             }
-  
+        
+            // Add a slight delay for smoother transitions
             await new Promise(resolve => setTimeout(resolve, 10));
+        
+            // Refresh and open the property pane for the selected container
             this.context.propertyPane.refresh();
             this.context.propertyPane.open();
           }
+        
         },
         onMoveClick: (index: number, direction: 'up' | 'down') => {
           if (this.displayMode === DisplayMode.Edit) {
@@ -297,7 +319,7 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
                 PropertyPaneSlider('containerCount', {
                   label: "Number of Blurbs",
                   min: 1,
-                  max: 4,
+                  max: 10,
                   value: this.properties.containerCount,
                   showValue: true,
                 }),
