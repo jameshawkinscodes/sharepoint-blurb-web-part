@@ -10,13 +10,18 @@
 .containerGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px; // Spacing between containers
+  // gap: 12px; // Spacing between containers
   justify-content: center;
+  justify-items: space-between;
+  
+  .item {
+    flex: 1 1 min-content;
+  }
 
   .container {
-    flex: 1 1 calc(25% - 16px); // Default: 4 containers per row
+    flex: 1 1; // Default: 4 containers per row
     max-width: 200px; // Optional: Set a max width
-    min-width: 150px; // Ensures smaller containers on resize
+    min-width: 90px; // Ensures smaller containers on resize
     position: relative;
     margin: 10px;
     padding: 20px;
@@ -74,16 +79,22 @@
   display: block; /* Ensure the entire block is clickable */
 }
 
+.fullWidth {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
+
 // Responsiveness
 @media (max-width: 1200px) {
   .container {
-    flex: 1 1 calc(33.33% - 16px); // Adjusts to 3 containers per row
+    flex: 1 1 calc(33.33% - 12px); // Adjusts to 3 containers per row
   }
 }
 
 @media (max-width: 768px) {
   .container {
-    flex: 1 1 calc(50% - 16px); // Adjusts to 2 containers per row
+    flex: 1 1 calc(50% - 12px); // Adjusts to 2 containers per row
   }
 }
 

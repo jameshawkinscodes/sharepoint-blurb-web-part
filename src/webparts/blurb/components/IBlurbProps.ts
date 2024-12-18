@@ -20,6 +20,7 @@ export interface IBlurbProps {
   containerCount: number;
   isEditMode: boolean;
   displayMode: DisplayMode;
+  isFullWidth?: boolean;
   onContainerClick: (index: number) => void;
   onEditClick: (index: number) => void;
   onMoveClick: (index: number, direction: 'up' | 'down') => void; // Updated to include direction
