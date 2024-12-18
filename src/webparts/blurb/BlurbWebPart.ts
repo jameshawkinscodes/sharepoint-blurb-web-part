@@ -43,6 +43,8 @@ export default class BlurbWebPart extends BaseClientSideWebPart<IBlurbWebPartPro
         containers: this.properties.containers || [],
         containerCount: this.properties.containerCount || 1,
         isEditMode: this.displayMode === DisplayMode.Edit,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        isFullWidth: (this.context.manifest as any).supportedHosts?.includes('SharePointFullPage'),
         displayMode: this.displayMode, // Pass display mode
         onContainerClick: async (index: number) => {
           if (this.displayMode === DisplayMode.Edit) {

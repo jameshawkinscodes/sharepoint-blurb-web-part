@@ -32,7 +32,7 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
   };
 
   return (
-    <div className={styles.blurbContainer}>
+    <div className={props.isFullWidth ? `${styles.blurbContainer} ${styles.fullWidth}` : styles.blurbContainer}>
       <div className={styles.containerGrid}>
         {props.containers.map((container, index) => {
           const isSelected = selectedBlurbIndex === index;
@@ -122,7 +122,7 @@ export const Blurb: React.FunctionComponent<IBlurbProps> = (props) => {
                 />
               )}
               <h3 style={{ color: container.fontColor }}>{container.title || 'Blurb Title'}</h3>
-              <p style={{ color: container.fontColor }}>{container.text || 'Add text'}</p>
+              <p style={{ color: container.fontColor }}>{container.text || ''}</p>
             </WrapperElement>
           );
         })}
